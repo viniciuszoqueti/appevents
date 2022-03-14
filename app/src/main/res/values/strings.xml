@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Mega Eventos</string>
+    <string name="maps_locate">Visualizar no Mapa</string>
+    <string name="btn_checkin">Realizar Check-in</string>
+    <string name="btn_share">Compartilhar</string>
+    <string name="checkin_text">Para realizar check-in, preencha seus dados abaixo:</string>
+    <string name="price">por apenas R$%1$.2f</string>
+    <string name="error_map">necessário ter um app de mapa instalado</string>
+    <string name="url_deeplink">http://www.appevents.com/events/%d</string>
+    <string name="message_checkin">Todos os campos acima devem ser preenchidos corretamente!</string>
+    <string name="checkin_sucess">Check-in realizado com sucesso!</string>
+    <string name="message_error">Erro! Verifique sua conexão com a internet e tentente novamente mais tarde.</string>
+</resources>

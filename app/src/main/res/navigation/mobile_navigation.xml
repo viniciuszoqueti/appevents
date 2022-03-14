@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/eventsFragment">
+
+    <fragment
+        android:id="@+id/eventsFragment"
+        android:name="com.br.appevents.events.presentation.events_list.EventsFragment"
+        android:label="events_list_fragment"
+        tools:layout="@layout/events_list_fragment">
+        <action
+            android:id="@+id/action_eventsFragment_to_eventDetailsFragment"
+            app:destination="@id/eventDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/eventDetailsFragment"
+        android:name="com.br.appevents.events.presentation.event_details.EventDetailsFragment"
+        android:label="EventDetailsFragment"
+        tools:layout="@layout/event_details_fragment">
+        <argument
+            android:name="eventId"
+            app:argType="integer" />
+        <deepLink
+            android:id="@+id/deepLink2"
+            app:uri="http://www.appevents.com/events/{eventId}" />
+    </fragment>
+</navigation>
