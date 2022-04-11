@@ -3,99 +3,68 @@ package com.br.appevents.events.presentation.event_details
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.br.appevents.R
 import com.br.appevents.databinding.EventDetailsFragmentBinding
-import com.br.appevents.events.data.network.models.toDomain
 import com.br.appevents.events.domain.models.Event
 import com.br.appevents.events.domain.resource.Resource
+import com.br.appevents.events.presentation.BaseFragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
-class EventDetailsFragment @Inject constructor() : Fragment() {
-
-    private var _binding: EventDetailsFragmentBinding? = null
-    private val binding: EventDetailsFragmentBinding get() = _binding!!
-
-    private var eventId: Int = 0
-
+class EventDetailsFragment : BaseFragment<EventDetailsFragmentBinding>(
+    R.layout.event_details_fragment,
+    EventDetailsFragmentBinding::bind
+) {
     private val eventDetailsViewModel: EventDetailsViewModel by viewModels()
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.event_details_fragment,
-            container,
-            false
-        )
-
-        arguments?.let {
-            eventId = EventDetailsFragmentArgs.fromBundle(it).eventId
-        }
-
-        return binding.root
-    }
+    private val args: EventDetailsFragmentArgs by navArgs()
 
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-
         setupObservers()
         setupListners()
-        eventDetailsViewModel.getEventById(eventId)
+        eventDetailsViewModel.getEventById(args.eventId)
     }
-
 
     private fun setupObservers() {
         eventDetailsViewModel.eventLiveData.observe(viewLifecycleOwner) {
-            when (it.status) {
-                Resource.ResourceStatus.SUCCESS -> {
-                    it.data?.toDomain()?.let { event ->
-                        Glide
-                            .with(this)
-                            .load(event.image)
-                            .apply(RequestOptions.circleCropTransform())
-                            .placeholder(R.drawable.ic_photo_default)
-                            .into(binding.ivEventLogo)
+            when (it) {
+                is Resource.Success -> {
+                    val event = it.data
+                    Glide
+                        .with(this)
+                        .load(event.image)
+                        .apply(RequestOptions.circleCropTransform())
+                        .placeholder(R.drawable.ic_photo_default)
+                        .into(binding.ivEventLogo)
 
-                        binding.tvTitle.text = event.title
-                        binding.tvPrice.text = context?.getString(R.string.price, event.price)
-                        binding.tvDescription.text = event.description
-                        openMapLocate(event)
-
-                    }
+                    binding.tvTitle.text = event.title
+                    binding.tvPrice.text = getString(R.string.price, event.price)
+                    binding.tvDescription.text = event.description
+                    openMapLocate(event)
                     binding.pbLoad.visibility = View.GONE
                 }
-                Resource.ResourceStatus.LOADING -> showLoad()
-                Resource.ResourceStatus.ERROR -> {
+                is Resource.Loading -> showLoad()
+                is Resource.Error -> {
                     showError()
-                    findNavController().popBackStack()
+                    pop()
                 }
-                Resource.ResourceStatus.NOT_FOUND -> findNavController().popBackStack()
+                is Resource.NotFound -> pop()
             }
         }
 
         eventDetailsViewModel.checkinLiveData.observe(viewLifecycleOwner) {
-            when (it.status) {
-                Resource.ResourceStatus.SUCCESS -> checkinSucess()
-                Resource.ResourceStatus.LOADING -> showLoad()
+            when (it) {
+                is Resource.Success -> checkinSucess()
+                is Resource.Loading -> showLoad()
                 else -> showError()
             }
         }
@@ -108,7 +77,7 @@ class EventDetailsFragment @Inject constructor() : Fragment() {
                 action = Intent.ACTION_SEND
                 putExtra(
                     Intent.EXTRA_TEXT,
-                    requireContext().getString(R.string.url_deeplink, eventId)
+                    requireContext().getString(R.string.url_deeplink, args.eventId)
                 )
                 type = "text/plain"
             }
@@ -123,7 +92,7 @@ class EventDetailsFragment @Inject constructor() : Fragment() {
             val email = binding.edEmail.text.toString()
             eventDetailsViewModel.let {
                 if (it.validationFormCheckin(name, email)) {
-                    it.checkin(eventId, name, email)
+                    it.checkin(args.eventId, name, email)
                 } else {
                     Toast.makeText(
                         context,
@@ -161,7 +130,7 @@ class EventDetailsFragment @Inject constructor() : Fragment() {
             requireContext().getString(R.string.checkin_sucess),
             Toast.LENGTH_LONG
         ).show()
-        findNavController().popBackStack()
+        pop()
     }
 
     private fun showError() {
@@ -175,10 +144,5 @@ class EventDetailsFragment @Inject constructor() : Fragment() {
 
     private fun showLoad() {
         binding.pbLoad.visibility = View.VISIBLE
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

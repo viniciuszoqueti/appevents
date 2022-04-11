@@ -27,8 +27,10 @@ class EventsListAdapter(
 
     override fun getItemCount(): Int = eventsList.count()
 
-    inner class ItemViewHolder(private val binding: ItemListEventBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    inner class ItemViewHolder(
+        private val binding: ItemListEventBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+
         fun bind(itemEvent: Event) {
 
             Glide
@@ -42,8 +44,7 @@ class EventsListAdapter(
             binding.tvPrice.text = itemView.context.getString(R.string.price, itemEvent.price)
 
             binding.mcvItemEvent.setOnClickListener {
-                onClickItem.invoke(itemEvent)
-                notifyDataSetChanged()
+                onClickItem(itemEvent)
             }
         }
     }

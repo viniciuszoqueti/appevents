@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.br.appevents.events.data.network.models.EventDataResponse
+import com.br.appevents.events.domain.models.Event
 import com.br.appevents.events.domain.repositories.EventsRepository
 import com.br.appevents.events.domain.resource.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,12 +12,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class EventsViewModel @Inject constructor(private val eventsRepository: EventsRepository) :
-    ViewModel() {
+class EventsViewModel @Inject constructor(
+    private val eventsRepository: EventsRepository
+) : ViewModel() {
 
     private val _eventsListLiveData:
-            MutableLiveData<Resource<List<EventDataResponse>>> = MutableLiveData()
-    val eventsListLiveData: LiveData<Resource<List<EventDataResponse>>> get() = _eventsListLiveData
+            MutableLiveData<Resource<List<Event>>> = MutableLiveData()
+    val eventsListLiveData: LiveData<Resource<List<Event>>> get() = _eventsListLiveData
 
     fun loadEvents() {
         viewModelScope.launch {
