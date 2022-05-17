@@ -3,7 +3,9 @@ package com.br.appevents.events.data.repositories
 import com.br.appevents.constants.RequestCodeConstants
 import com.br.appevents.events.data.network.models.CheckinEventRequest
 import com.br.appevents.events.data.network.models.EventDataResponse
+import com.br.appevents.events.data.network.models.toDomain
 import com.br.appevents.events.data.network.services.EventsService
+import com.br.appevents.events.domain.models.Event
 import com.br.appevents.events.domain.repositories.EventsRepository
 import com.br.appevents.events.domain.resource.Resource
 import kotlinx.coroutines.Dispatchers
@@ -15,40 +17,40 @@ class EventsRepositoryImpl @Inject constructor(
     private val eventsService: EventsService
 ) : EventsRepository {
 
-    override suspend fun getEventsList(): Resource<List<EventDataResponse>> =
+    override suspend fun getEventsList(): Resource<List<Event>> =
         withContext(Dispatchers.IO) {
             try {
                 eventsService.getEventsList().let {
                     if (it.isSuccessful) {
                         it.body()?.let { data ->
-                            return@withContext Resource.success(data)
+                            return@withContext Resource.Success(data.toDomain())
                         }
                     }
-                    return@withContext Resource.error(null, it.message())
-                }
 
+                    return@withContext Resource.Error(it.message())
+                }
             } catch (ex: Exception) {
-                return@withContext Resource.error(null, ex.message)
+                return@withContext Resource.Error(ex.message)
             }
         }
 
 
-    override suspend fun getEventDetails(eventId: Int): Resource<EventDataResponse> =
+    override suspend fun getEventDetails(eventId: Int): Resource<Event> =
         withContext(Dispatchers.IO) {
             try {
                 eventsService.getEventDetails(eventId).let {
                     if (it.isSuccessful) {
                         it.body()?.let { data ->
-                            return@withContext Resource.success(data)
+                            return@withContext Resource.Success(data.toDomain())
                         }
                     } else if (it.code() == RequestCodeConstants.NOT_FOUND) {
-                        return@withContext Resource.notFound(null)
+                        return@withContext Resource.NotFound()
                     }
-                    return@withContext Resource.error(null, it.message())
+                    Resource.Error(it.message())
                 }
 
             } catch (ex: IOException) {
-                return@withContext Resource.error(null, ex.message)
+                Resource.Error(ex.message)
             }
         }
 
@@ -58,14 +60,13 @@ class EventsRepositoryImpl @Inject constructor(
                 eventsService.checkinEvent(CheckinEventRequest(eventId, name, email)).let {
                     if (it.isSuccessful) {
                         it.body()?.let { data ->
-                            return@withContext Resource.success(data)
+                            return@withContext Resource.Success(data)
                         }
                     }
-                    return@withContext Resource.error(null, it.message())
+                    Resource.Error(it.message())
                 }
-
             } catch (ex: IOException) {
-                return@withContext Resource.error(null, ex.message)
+                Resource.Error(ex.message)
             }
         }
 

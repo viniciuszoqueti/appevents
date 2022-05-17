@@ -1,48 +1,23 @@
 package com.br.appevents.events.presentation.events_list
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.Navigation
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.br.appevents.R
 import com.br.appevents.databinding.EventsListFragmentBinding
-import com.br.appevents.events.data.network.models.toDomain
 import com.br.appevents.events.domain.models.Event
 import com.br.appevents.events.domain.resource.Resource
+import com.br.appevents.events.presentation.BaseFragment
 import com.br.appevents.events.presentation.events_list.adapters.EventsListAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
-class EventsFragment @Inject constructor() : Fragment() {
-
-    private var _binding: EventsListFragmentBinding? = null
-    private val binding: EventsListFragmentBinding get() = _binding!!
-
+class EventsFragment : BaseFragment<EventsListFragmentBinding>(
+    R.layout.events_list_fragment,
+    EventsListFragmentBinding::bind
+) {
     private val eventsViewModel: EventsViewModel by viewModels()
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.events_list_fragment,
-            container,
-            false
-        )
-
-        return binding.root
-    }
 
     override fun onViewCreated(
         view: View,
@@ -57,7 +32,7 @@ class EventsFragment @Inject constructor() : Fragment() {
     private fun setupObservers() {
         eventsViewModel.eventsListLiveData.observe(viewLifecycleOwner) {
             when (it.status) {
-                Resource.ResourceStatus.SUCCESS -> setupEventList(it.data?.toDomain())
+                Resource.ResourceStatus.SUCCESS -> setupEventList(it.data)
                 Resource.ResourceStatus.LOADING -> showLoad()
                 else -> showError()
             }
@@ -72,19 +47,11 @@ class EventsFragment @Inject constructor() : Fragment() {
         }
 
         binding.rvEvents.apply {
-            layoutManager = LinearLayoutManager(
-                context,
-                RecyclerView.VERTICAL,
-                false
-            )
             adapter = EventsListAdapter(list) { eventItem ->
-                Navigation.findNavController(binding.root).navigate(
-                    EventsFragmentDirections.actionEventsFragmentToEventDetailsFragment(eventItem.id)
-                )
+                navigate(EventsFragmentDirections.actionEventsFragmentToEventDetailsFragment(eventItem.id))
             }
         }
         binding.pbLoad.visibility = View.GONE
-
     }
 
     private fun showError() {
@@ -100,11 +67,5 @@ class EventsFragment @Inject constructor() : Fragment() {
     private fun showLoad() {
         binding.pbLoad.visibility = View.VISIBLE
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
 }
 
