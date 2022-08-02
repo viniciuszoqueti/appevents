@@ -31,9 +31,9 @@ class EventsFragment : BaseFragment<EventsListFragmentBinding>(
 
     private fun setupObservers() {
         eventsViewModel.eventsListLiveData.observe(viewLifecycleOwner) {
-            when (it.status) {
-                Resource.ResourceStatus.SUCCESS -> setupEventList(it.data)
-                Resource.ResourceStatus.LOADING -> showLoad()
+            when (it) {
+                is Resource.Success -> setupEventList(it.data)
+                is Resource.Loading -> showLoad()
                 else -> showError()
             }
         }
@@ -48,7 +48,11 @@ class EventsFragment : BaseFragment<EventsListFragmentBinding>(
 
         binding.rvEvents.apply {
             adapter = EventsListAdapter(list) { eventItem ->
-                navigate(EventsFragmentDirections.actionEventsFragmentToEventDetailsFragment(eventItem.id))
+                navigate(
+                    EventsFragmentDirections.actionEventsFragmentToEventDetailsFragment(
+                        eventItem.id
+                    )
+                )
             }
         }
         binding.pbLoad.visibility = View.GONE

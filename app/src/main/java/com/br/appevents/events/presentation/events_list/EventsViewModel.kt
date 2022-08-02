@@ -22,11 +22,11 @@ class EventsViewModel @Inject constructor(
 
     fun loadEvents() {
         viewModelScope.launch {
-            _eventsListLiveData.postValue(Resource.loading(null))
+            _eventsListLiveData.postValue(Resource.Loading())
             try {
                 _eventsListLiveData.postValue(eventsRepository.getEventsList())
             } catch (ex: Exception) {
-                _eventsListLiveData.postValue(Resource.error(null, ex.message))
+                _eventsListLiveData.postValue(Resource.Error(ex.message))
             }
         }
     }
