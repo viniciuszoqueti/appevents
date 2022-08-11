@@ -6,10 +6,11 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import com.br.appevents.R
 import com.br.appevents.databinding.EventsListFragmentBinding
-import com.br.appevents.events.domain.models.Event
+import com.br.appevents.events.domain.models.EventModelDomain
 import com.br.appevents.events.domain.resource.Resource
 import com.br.appevents.events.presentation.BaseFragment
 import com.br.appevents.events.presentation.events_list.adapters.EventsListAdapter
+import com.br.appevents.events.presentation.models.EventModelPresentation
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,7 +40,7 @@ class EventsFragment : BaseFragment<EventsListFragmentBinding>(
         }
     }
 
-    private fun setupEventList(list: List<Event>?) {
+    private fun setupEventList(list: List<EventModelPresentation>?) {
 
         if (list == null) {
             showError()

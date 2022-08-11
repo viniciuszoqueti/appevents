@@ -2,11 +2,9 @@ package com.br.appevents.events.data.repositories
 
 import com.br.appevents.constants.RequestCodeConstants
 import com.br.appevents.events.data.network.models.CheckinEventRequest
-import com.br.appevents.events.data.network.models.EventDataResponse
 import com.br.appevents.events.data.network.models.toDomain
 import com.br.appevents.events.data.network.services.EventsService
-import com.br.appevents.events.domain.models.Event
-import com.br.appevents.events.domain.repositories.EventsRepository
+import com.br.appevents.events.domain.models.EventModelDomain
 import com.br.appevents.events.domain.resource.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,7 +15,7 @@ class EventsRepositoryImpl @Inject constructor(
     private val eventsService: EventsService
 ) : EventsRepository {
 
-    override suspend fun getEventsList(): Resource<List<Event>> =
+    override suspend fun getEventsList(): Resource<List<EventModelDomain>> =
         withContext(Dispatchers.IO) {
             try {
                 eventsService.getEventsList().let {
@@ -35,7 +33,7 @@ class EventsRepositoryImpl @Inject constructor(
         }
 
 
-    override suspend fun getEventDetails(eventId: Int): Resource<Event> =
+    override suspend fun getEventDetails(eventId: Int): Resource<EventModelDomain> =
         withContext(Dispatchers.IO) {
             try {
                 eventsService.getEventDetails(eventId).let {

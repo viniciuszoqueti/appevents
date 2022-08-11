@@ -1,8 +1,8 @@
-package com.br.appevents.events.domain.models
+package com.br.appevents.events.presentation.models
 
 import android.net.Uri
 
-data class Event(
+data class EventModelPresentation(
     val people: List<Any?>,
     val date: String,
     val description: String,

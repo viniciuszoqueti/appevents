@@ -4,20 +4,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.br.appevents.events.domain.models.Event
-import com.br.appevents.events.domain.repositories.EventsRepository
+import com.br.appevents.events.domain.models.toPresentation
 import com.br.appevents.events.domain.resource.Resource
+import com.br.appevents.events.domain.useCase.EventsUseCase
+import com.br.appevents.events.presentation.models.EventModelPresentation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class EventDetailsViewModel @Inject constructor(
-    private val eventsRepository: EventsRepository
+    private val eventsUseCase: EventsUseCase
 ) : ViewModel() {
 
-    private val _eventLiveData: MutableLiveData<Resource<Event>> = MutableLiveData()
-    val eventLiveData: LiveData<Resource<Event>> get() = _eventLiveData
+    private val _eventLiveData: MutableLiveData<Resource<EventModelPresentation>> =
+        MutableLiveData()
+    val eventLiveData: LiveData<Resource<EventModelPresentation>> get() = _eventLiveData
 
     private val _checkinLiveData: MutableLiveData<Resource<Any>> = MutableLiveData()
     val checkinLiveData: LiveData<Resource<Any>> get() = _checkinLiveData
@@ -26,7 +28,15 @@ class EventDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             _eventLiveData.postValue(Resource.Loading())
             try {
-                _eventLiveData.postValue(eventsRepository.getEventDetails(eventId))
+                val response = eventsUseCase.getEventDetails(eventId).castResource {
+                    when (it) {
+                        is Resource.Success -> Resource.Success(it.data.toPresentation())
+                        is Resource.Error -> Resource.Error(it.msg)
+                        is Resource.Loading -> Resource.Loading()
+                        else -> Resource.NotFound()
+                    }
+                }
+                _eventLiveData.postValue(response)
             } catch (ex: Exception) {
                 _eventLiveData.postValue(Resource.Error(ex.message))
             }
@@ -37,7 +47,7 @@ class EventDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             _checkinLiveData.postValue(Resource.Loading())
             try {
-                _checkinLiveData.postValue(eventsRepository.checkinEvent(eventId, name, email))
+                _checkinLiveData.postValue(eventsUseCase.checkinEvent(eventId, name, email))
             } catch (ex: Exception) {
                 _checkinLiveData.postValue(Resource.Error(ex.message))
             }

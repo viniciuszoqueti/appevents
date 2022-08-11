@@ -1,6 +1,6 @@
 package com.br.appevents.events.data.network.models
 
-import com.br.appevents.events.domain.models.Event
+import com.br.appevents.events.domain.models.EventModelDomain
 import com.br.appevents.utils.extensions.convertLongToDateTime
 
 data class EventDataResponse(
@@ -15,7 +15,7 @@ data class EventDataResponse(
     val id: String
 )
 
-fun EventDataResponse.toDomain() = Event(
+fun EventDataResponse.toDomain() = EventModelDomain(
     people = this.people,
     date = this.date.convertLongToDateTime(),
     description = this.description,
@@ -27,6 +27,6 @@ fun EventDataResponse.toDomain() = Event(
     id = this.id.toInt()
 )
 
-fun List<EventDataResponse>.toDomain(): List<Event> {
+fun List<EventDataResponse>.toDomain(): List<EventModelDomain> {
     return this.map { it.toDomain() }
 }

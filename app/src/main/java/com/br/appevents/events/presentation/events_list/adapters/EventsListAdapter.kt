@@ -7,11 +7,11 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.br.appevents.R
 import com.br.appevents.databinding.ItemListEventBinding
-import com.br.appevents.events.domain.models.Event
+import com.br.appevents.events.presentation.models.EventModelPresentation
 
 class EventsListAdapter(
-    private val eventsList: List<Event>,
-    private val onClickItem: (eventItem: Event) -> Unit
+    private val eventsList: List<EventModelPresentation>,
+    private val onClickItem: (eventItem: EventModelPresentation) -> Unit
 ) : RecyclerView.Adapter<EventsListAdapter.ItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -31,7 +31,7 @@ class EventsListAdapter(
         private val binding: ItemListEventBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(itemEvent: Event) {
+        fun bind(itemEvent: EventModelPresentation) {
 
             Glide
                 .with(itemView)

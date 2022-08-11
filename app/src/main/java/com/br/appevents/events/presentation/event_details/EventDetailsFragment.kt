@@ -9,9 +9,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.br.appevents.R
 import com.br.appevents.databinding.EventDetailsFragmentBinding
-import com.br.appevents.events.domain.models.Event
 import com.br.appevents.events.domain.resource.Resource
 import com.br.appevents.events.presentation.BaseFragment
+import com.br.appevents.events.presentation.models.EventModelPresentation
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import dagger.hilt.android.AndroidEntryPoint
@@ -104,7 +104,7 @@ class EventDetailsFragment : BaseFragment<EventDetailsFragmentBinding>(
         }
     }
 
-    private fun openMapLocate(event: Event) {
+    private fun openMapLocate(event: EventModelPresentation) {
         binding.btnMap.isEnabled = true
         binding.btnMap.setOnClickListener {
             val mapIntent = Intent(
