@@ -10,4 +10,8 @@
     <string name="message_checkin">Todos os campos acima devem ser preenchidos corretamente!</string>
     <string name="checkin_sucess">Check-in realizado com sucesso!</string>
     <string name="message_error">Erro! Verifique sua conexão com a internet e tentente novamente mais tarde.</string>
+    <string name="seu_e_mail_aqui">seu e-mail aqui</string>
+    <string name="seu_nome_aqui">seu nome aqui</string>
+    <string name="dialog_btn_enviar">Enviar</string>
+    <string name="menu_item_share">compartilhar</string>
 </resources>

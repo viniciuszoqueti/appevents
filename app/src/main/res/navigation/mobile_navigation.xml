@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/eventsFragment"
         android:name="com.br.appevents.events.presentation.events_list.EventsFragment"
-        android:label="events_list_fragment"
+        android:label="Eventos"
         tools:layout="@layout/events_list_fragment">
         <action
             android:id="@+id/action_eventsFragment_to_eventDetailsFragment"
@@ -18,7 +18,7 @@
     <fragment
         android:id="@+id/eventDetailsFragment"
         android:name="com.br.appevents.events.presentation.event_details.EventDetailsFragment"
-        android:label="EventDetailsFragment"
+        android:label="Detalhes"
         tools:layout="@layout/event_details_fragment">
         <argument
             android:name="eventId"
@@ -26,5 +26,18 @@
         <deepLink
             android:id="@+id/deepLink2"
             app:uri="http://www.appevents.com/events/{eventId}" />
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_subscribeDialogFragment"
+            app:destination="@id/subscribeDialogFragment"
+            app:popUpTo="@id/eventDetailsFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/subscribeDialogFragment"
+        android:name="com.br.appevents.events.presentation.event_details.SubscribeDialogFragment"
+        android:label="subscribe_dialog_fragment"
+        tools:layout="@layout/subscribe_dialog_fragment" >
+        <argument
+            android:name="eventId"
+            app:argType="integer" />
+    </dialog>
 </navigation>

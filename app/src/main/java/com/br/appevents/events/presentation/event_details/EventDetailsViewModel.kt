@@ -1,13 +1,13 @@
 package com.br.appevents.events.presentation.event_details
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.br.appevents.events.domain.models.toPresentation
 import com.br.appevents.events.domain.resource.Resource
 import com.br.appevents.events.domain.useCase.EventsUseCase
 import com.br.appevents.events.presentation.models.EventModelPresentation
+import com.br.appevents.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,11 +17,11 @@ class EventDetailsViewModel @Inject constructor(
     private val eventsUseCase: EventsUseCase
 ) : ViewModel() {
 
-    private val _eventLiveData: MutableLiveData<Resource<EventModelPresentation>> =
-        MutableLiveData()
+    private val _eventLiveData: SingleLiveEvent<Resource<EventModelPresentation>> =
+        SingleLiveEvent()
     val eventLiveData: LiveData<Resource<EventModelPresentation>> get() = _eventLiveData
 
-    private val _checkinLiveData: MutableLiveData<Resource<Any>> = MutableLiveData()
+    private val _checkinLiveData: SingleLiveEvent<Resource<Any>> = SingleLiveEvent()
     val checkinLiveData: LiveData<Resource<Any>> get() = _checkinLiveData
 
     fun getEventById(eventId: Int) {

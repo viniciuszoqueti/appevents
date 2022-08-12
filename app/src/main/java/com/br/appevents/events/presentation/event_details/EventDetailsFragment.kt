@@ -3,9 +3,12 @@ package com.br.appevents.events.presentation.event_details
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.br.appevents.R
 import com.br.appevents.databinding.EventDetailsFragmentBinding
@@ -21,8 +24,13 @@ class EventDetailsFragment : BaseFragment<EventDetailsFragmentBinding>(
     R.layout.event_details_fragment,
     EventDetailsFragmentBinding::bind
 ) {
-    private val eventDetailsViewModel: EventDetailsViewModel by viewModels()
+    private val eventDetailsViewModel: EventDetailsViewModel by activityViewModels()
     private val args: EventDetailsFragmentArgs by navArgs()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onViewCreated(
         view: View,
@@ -32,6 +40,30 @@ class EventDetailsFragment : BaseFragment<EventDetailsFragmentBinding>(
         setupObservers()
         setupListners()
         eventDetailsViewModel.getEventById(args.eventId)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_share_appbar, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_menu_share -> {
+                val sendIntent: Intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(
+                        Intent.EXTRA_TEXT,
+                        requireContext().getString(R.string.url_deeplink, args.eventId)
+                    )
+                    type = "text/plain"
+                }
+
+                val shareIntent = Intent.createChooser(sendIntent, null)
+                startActivity(shareIntent)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun setupObservers() {
@@ -72,35 +104,12 @@ class EventDetailsFragment : BaseFragment<EventDetailsFragmentBinding>(
 
     private fun setupListners() {
 
-        binding.btnShare.setOnClickListener {
-            val sendIntent: Intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(
-                    Intent.EXTRA_TEXT,
-                    requireContext().getString(R.string.url_deeplink, args.eventId)
-                )
-                type = "text/plain"
-            }
-
-            val shareIntent = Intent.createChooser(sendIntent, null)
-            startActivity(shareIntent)
-        }
-
         binding.btnCheckin.setOnClickListener {
-
-            val name = binding.edName.text.toString()
-            val email = binding.edEmail.text.toString()
-            eventDetailsViewModel.let {
-                if (it.validationFormCheckin(name, email)) {
-                    it.checkin(args.eventId, name, email)
-                } else {
-                    Toast.makeText(
-                        context,
-                        requireContext().getString(R.string.message_checkin),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
+            navigate(
+                EventDetailsFragmentDirections.actionEventDetailsFragmentToSubscribeDialogFragment(
+                    args.eventId
+                )
+            )
         }
     }
 
